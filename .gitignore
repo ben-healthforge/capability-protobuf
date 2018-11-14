@@ -1,0 +1,5 @@
+bazel-bin
+bazel-capability-protobuf
+bazel-genfiles
+bazel-out
+bazel-testlogs
