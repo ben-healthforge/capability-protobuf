@@ -32,6 +32,7 @@ message Read{{$type}}Response {
 }
 {{else if (eq .Code "search-type")}}
 message Search{{$type}}Request {
+{{- /* FIXME: the ordering of params is significant, so they should probably be sorted alphabetically, but even then it would break backward compatibility if a future version of the statement added new params */ -}}
 {{- range $i,$p := $searchParams}}
     string {{normalise $p.Name}} = {{$i}};
 {{- end}}
