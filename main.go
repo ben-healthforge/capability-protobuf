@@ -5,6 +5,7 @@ import (
 	"github.com/golang/glog"
 	"net/http"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -17,6 +18,11 @@ type CapabilityStatement struct {
 			Documentation string
 			Interaction []struct {
 				Code string
+				Documentation string
+			}
+			SearchParam []struct {
+				Name string
+				Type string
 				Documentation string
 			}
 		}
@@ -48,7 +54,9 @@ func main() {
 		glog.Exitf("%v", err)
 	}
 
-	tmpl, err := template.ParseFiles("/home/ben/opt/go/src/github.com/ben-healthforge/capability-protobuf/server.proto.tmpl")
+	tmpl, err := template.New("server.proto.tmpl").Funcs(template.FuncMap{
+		"normalise": normalise,
+	}).ParseFiles("/home/ben/opt/go/src/github.com/ben-healthforge/capability-protobuf/server.proto.tmpl")
 	if err != nil {
 		glog.Exitf("%v", err)
 	}
@@ -61,4 +69,8 @@ func main() {
 			}
 		}
 	}
+}
+
+func normalise(name string) string {
+	return strings.Replace(name, "-",  "_", -1)
 }

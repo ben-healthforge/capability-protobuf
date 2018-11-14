@@ -9,11 +9,14 @@ import "github.com/google/fhir/proto/stu3/resources.proto";
 {{- range .Resource -}}
 
 {{$type := .Type}}
+{{$searchParams := .SearchParam}}
 
 service {{.Type}} {
     {{range .Interaction -}}
     {{if (eq .Code "read") -}}
     rpc Read(Read{{$type}}Request) returns (Read{{$type}}Response) {}
+    {{else if (eq .Code "search-type") -}}
+    rpc Search(Search{{$type}}Request) returns (Search{{$type}}Response) {}
     {{- end}}
     {{- end}}
 }
@@ -26,6 +29,15 @@ message Read{{$type}}Request {
 }
 message Read{{$type}}Response {
     google.fhir.stu3.proto.{{$type}} resource = 1;
+}
+{{else if (eq .Code "search-type")}}
+message Search{{$type}}Request {
+{{- range $i,$p := $searchParams}}
+    string {{normalise $p.Name}} = {{$i}};
+{{- end}}
+}
+message Search{{$type}}Response {
+    google.fhir.stu3.proto.Bundle results = 1;
 }
 {{- end}}
 
