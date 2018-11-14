@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package fhirproxy;
+
+option go_package = "proto";
+
+import "github.com/google/fhir/proto/stu3/resources.proto";
+
+{{- range .Resource -}}
+
+{{$type := .Type}}
+
+service {{.Type}} {
+    {{range .Interaction -}}
+    {{if (eq .Code "read") -}}
+    rpc Read(Read{{$type}}Request) returns (Read{{$type}}Response) {}
+    {{- end}}
+    {{- end}}
+}
+
+{{- range .Interaction -}}
+
+{{if (eq .Code "read")}}
+message Read{{$type}}Request {
+    string id = 1;
+}
+message Read{{$type}}Response {
+    google.fhir.stu3.proto.{{$type}} resource = 1;
+}
+{{- end}}
+
+{{- end}}
+
+{{- end}}

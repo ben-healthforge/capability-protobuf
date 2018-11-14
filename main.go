@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/golang/glog"
 	"net/http"
 	"os"
+	"text/template"
 )
 
 type CapabilityStatement struct {
@@ -48,5 +48,17 @@ func main() {
 		glog.Exitf("%v", err)
 	}
 
-	fmt.Printf("%#v\n", statement)
+	tmpl, err := template.ParseFiles("/home/ben/opt/go/src/github.com/ben-healthforge/capability-protobuf/server.proto.tmpl")
+	if err != nil {
+		glog.Exitf("%v", err)
+	}
+
+	for _, rest := range statement.Rest {
+		if rest.Mode == "server" {
+			err = tmpl.Execute(os.Stdout, rest)
+			if err != nil {
+				glog.Exitf("%v", err)
+			}
+		}
+	}
 }
